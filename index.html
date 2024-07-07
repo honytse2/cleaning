@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>清潔姐姐簽到表格</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input[type="date"], input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>清潔姐姐簽到表格</h1>
+    <table id="checkinTable">
+        <thead>
+            <tr>
+                <th>日期</th>
+                <th>清潔姐姐簽名</th>
+                <th>僱主簽名</th>
+            </tr>
+        </thead>
+        <tbody id="checkinTableBody"></tbody>
+    </table>
+    <button onclick="addNewRow()">新增簽到行</button>
+    <button onclick="saveData()">保存數據</button>
+
+    <script>
+        let checkinData = [];
+
+        function loadData() {
+            const savedData = localStorage.getItem('checkinData');
+            if (savedData) {
+                checkinData = JSON.parse(savedData);
+                renderTable();
+            }
+        }
+
+        function saveData() {
+            localStorage.setItem('checkinData', JSON.stringify(checkinData));
+            alert('數據已保存！');
+        }
+
+        function renderTable() {
+            const tableBody = document.getElementById('checkinTableBody');
+            tableBody.innerHTML = '';
+            checkinData.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><input type="date" value="${row.date}" onchange="updateData(${index}, 'date', this.value)"></td>
+                    <td><input type="text" value="${row.cleanerSignature}" onchange="updateData(${index}, 'cleanerSignature', this.value)"></td>
+                    <td><input type="text" value="${row.employerSignature}" onchange="updateData(${index}, 'employerSignature', this.value)"></td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function addNewRow() {
+            checkinData.push({ date: '', cleanerSignature: '', employerSignature: '' });
+            renderTable();
+        }
+
+        function updateData(index, field, value) {
+            checkinData[index][field] = value;
+        }
+
+        // 初始化表格
+        loadData();
+        if (checkinData.length === 0) {
+            for (let i = 0; i < 4; i++) {
+                addNewRow();
+            }
+        }
+    </script>
+</body>
+</html>
